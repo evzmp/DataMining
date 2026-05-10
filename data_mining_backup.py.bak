@@ -1,0 +1,83 @@
+import sys
+import pandas as pd
+import numpy as np
+import seaborn as sns
+from csv import writer
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_curve, roc_auc_score
+from sklearn.naive_bayes import GaussianNB
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
+
+def wineClassification(trainFile,dataFile,outputFile):
+	#create dataFrames for train and data files
+	trainDf = pd.read_csv(trainFile,sep=';')
+	dataDf =  pd.read_csv(dataFile,sep=';')
+
+	#Separate train df to attributes 'Xtrain' and target 'ytrain'
+	Xtrain = trainDf.drop("quality",axis=1)
+	ytrain = trainDf["quality"]
+
+	#Train model to data
+	model = RandomForestClassifier()
+	model.fit(Xtrain, ytrain)
+
+	#predict output results
+	y_pred = model.predict(dataDf)
+	dataDf = dataDf.assign(quality=y_pred)
+	dataDf.to_csv(outputFile, sep=';', index=False)
+
+	return
+
+def clustering2D(dataFile,outputFile):
+	return
+
+def assocRuleMine():
+	return
+
+if __name__ == '__main__':
+	argc = len(sys.argv)
+	if argc < 2:
+		print("Not enough arguments. Rerun with --help for more info.")
+		exit(0)
+
+	if sys.argv[1] == '--help' or sys.argv[1] == '-h':
+		print("Usage: python3 dataMining.py [OPTION]...")
+		print("Example: python3 dataMining.py -T train_data_file.csv input_data_file.csv output_data_file\n")
+		print("OPTIONS:\n\t-T train_data_file.csv input_data_file.csv output_data_file\tPerforms Classification ")
+		print("\t-C data_for_clustering.csv attribute1 attribute2 outputFile\t\tPerforms Clustering based on the 2 given attributes")
+		print("\t-A ")
+		exit(0)
+	
+	if sys.argv[1] == '-T':
+		if argc < 5:
+			print("Incorrect number of arguments for Classification. Use --help option for more info...")
+			exit(0)
+		trainFile = open(sys.argv[2],'r')
+		dataFile = open(sys.argv[3],'r')
+		outputFile = open(sys.argv[4],'w', newline='\n')
+		wineClassification(trainFile,dataFile,outputFile)
+		trainFile.close()
+		dataFile.close()
+		outputFile.close()
+	elif sys.argv[1] == '-C':
+		if argc < 6:
+			print("Incorect number of arguments for Clustering. Use --help option for more info...")
+			exit(0)
+		dataFile = open(sys.argv[2],'r')
+		outputFile = open(sys.argv[5],'w',newline='\n')
+		clustering2D(dataFile,outputFile)
+		dataFile.close()
+		outputFile.close()
+	
+
+	
+
